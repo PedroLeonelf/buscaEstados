@@ -15,10 +15,10 @@ class Search:
         
 
         actual = self.begin
-        openLst = [actual]
+        openLst = {actual}
         closedLst = []
         actual.gCost = 0
-        while openLst != []:
+        while openLst != {}:
             actual = self.getMinorNode(openLst)
             # for node in openLst:
             #     print(node.getPos(), node.func, node.gCost, node.hCost)
@@ -117,10 +117,10 @@ class Search:
         newGcost = actual.gCost + self.distance(actual, neighboor)
         return newGcost < oldGcost
     
-    def getMinorNode(self, lst) -> Node:
-        minor = lst[0].func
-    
-        return list(filter(lambda it : it.func == minor, lst))[0]
+    def getMinorNode(self, dic) -> Node:
+        
+        
+        return maxObject
 
 
 
