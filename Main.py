@@ -1,24 +1,12 @@
-from matplotlib.pyplot import close
 from Mapping import *
 from Search import *
 import time
 
-
-
-
-
-
-
 map = Map()
-
 begin = time.time()
-search = Search(map.grafs[10][10], map.grafs[200][550], map.grafs)
 
-
-
+search = Search(map.grafs[10][10], map.grafs[800][400], map.grafs)
 resp, closedSet = search.aStar()
-
-
 vect = []
 node = resp
 while (node.father != None):

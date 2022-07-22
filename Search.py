@@ -1,15 +1,18 @@
+import time
 from Node import *
-import numpy as np
+import operator
 
 CARDINAL = 10
 DIAGONAL = 14
 
 class Search:
+    
     def __init__(self, begin, objective,grid):
         self.grid = grid
         self.begin = begin
         self.objective = objective
         self.begin.func = 0
+        self.getTot = 0
         
     
     def aStar(self):
@@ -19,23 +22,40 @@ class Search:
         closedSet = set()
         actual.gCost = 0
         actual.Fcost = 0
+        
         while openDic != {}:
-            actual = self.getMinorNode(openDic)
             
+            inicio = time.time()
+            actual = self.getMinorNode(openDic)
+            self.getTot += time.time() - inicio
+
             closedSet.add(f'{actual.x}:{actual.y}')
             openDic.pop(f'{actual.x}:{actual.y}')
+            
             if actual == self.objective:
+                print('total:',self.getTot) 
                 return actual, closedSet
-            for neighboor in self.getNeighboors(actual):
+            
+            neighboors = self.getNeighboors(actual)
+            for neighboor in neighboors:
+                
+                
                 if f'{neighboor.x}:{neighboor.y}' in closedSet:
                      continue
-                if neighboor not in openDic.values():
+                
+                if f'{neighboor.x}:{neighboor.y}' not in openDic.keys(): 
+                    
                     neighboor.father = actual
                     self.calculateFunc(actual, neighboor)
                     openDic[f'{neighboor.x}:{neighboor.y}'] = neighboor.func
-                elif neighboor in openDic.values() and self.checkGcost(neighboor, actual):
+                    
+                elif f'{neighboor.x}:{neighboor.y}'in openDic.keys() and self.checkGcost(neighboor, actual):
                     self.calculateFunc(actual, neighboor)
                     neighboor.father = actual
+                
+                
+                
+                
 
 
 
@@ -52,6 +72,7 @@ class Search:
     
 
     def getNeighboors(self, actual) -> set:
+
         neighboors = set()
         x, y = actual.x , actual.y 
         for x1 in range(x-1, x + 2):
@@ -63,6 +84,7 @@ class Search:
                     continue
                 if self.diagonalBlock(x,y,x1,y1): continue
                 neighboors.add(self.grid[x1][y1])
+        
         return neighboors
     
     def diagonalBlock(self, x, y, x1, y1) -> bool: # em caso de consideração de canto como vizinho verifica se não a bloqueio ao redor
@@ -115,8 +137,11 @@ class Search:
 
 
     def getMinorNode(self, dic) -> Node:
-        key = min(dic, key=dic.get)
+        
+        # key = min(dic.items(), key=operator.itemgetter(1))[0]
+        key = min(dic, key=dic.get) # performace 1
         x,y = key.split(':')[0], key.split(':')[1]
+        
         return self.grid[int(x)][int(y)]
 
 
