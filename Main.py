@@ -8,11 +8,11 @@ import time
 
 
 
-begin = time.time()
+
 map = Map()
 
-
-search = Search(map.grafs[10][10], map.grafs[1000][1000], map.grafs)
+begin = time.time()
+search = Search(map.grafs[10][10], map.grafs[200][550], map.grafs)
 
 
 
@@ -30,7 +30,7 @@ vect.append(node)
 
 vect.reverse()
 print(time.time() - begin)
-map.showMap(vect)
+map.showMap(vect, closedSet)
 
 
 
