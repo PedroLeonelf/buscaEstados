@@ -11,7 +11,7 @@ begin = time.time()
 map = Map()
 
 
-search = Search(map.grafs[100][100], map.grafs[60][400], map.grafs)
+search = Search(map.grafs[100][100], map.grafs[450][300], map.grafs)
 
 
 
@@ -28,9 +28,10 @@ while (node.father != None):
 vect.append(node)
 
 vect.reverse()
+print(time.time() - begin)
 map.showMap(vect)
 
-print(time.time() - begin)
+
 # for nod in vect:
 #     print(nod.x, nod.y)
 

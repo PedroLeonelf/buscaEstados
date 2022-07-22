@@ -15,31 +15,33 @@ class Search:
         
 
         actual = self.begin
-        openLst = {actual}
-        closedLst = []
+        openDic = {f'{actual.x}:{actual.y}' : actual.func}
+        
+        closedSet = set()
         actual.gCost = 0
-        while openLst != {}:
-            actual = self.getMinorNode(openLst)
+        actual.Fcost = 0
+        while openDic != {}:
+            actual = self.getMinorNode(openDic)
+            print(f'Actual actual:{actual.getPos()} func:{actual.func}')
             # for node in openLst:
             #     print(node.getPos(), node.func, node.gCost, node.hCost)
             # enter = input('enter:')
             # print(f"Actual:{actual.getPos()}")
 
-            closedLst.append(actual)
-            openLst.remove(actual)
+            closedSet.add(f'{actual.x}:{actual.y}')
+            openDic.pop(f'{actual.x}:{actual.y}')
             if actual == self.objective:
                 return actual
-            if actual != self.begin:
-                print(actual.getPos(), actual.getCosts(), actual.father.getPos())
+
             for neighboor in self.getNeighboors(actual):
                 
-                if neighboor in closedLst:
+                if f'{neighboor.x}:{neighboor.y}' in closedSet:
                      continue
-                if neighboor not in openLst:
+                if neighboor not in openDic.values():
                     neighboor.father = actual
                     self.calculateFunc(actual, neighboor)
-                    openLst.append(neighboor)
-                elif neighboor in openLst and self.checkGcost(neighboor, actual):
+                    openDic[f'{neighboor.x}:{neighboor.y}'] = neighboor.func
+                elif neighboor in openDic.values() and self.checkGcost(neighboor, actual):
                     self.calculateFunc(actual, neighboor)
                     neighboor.father = actual
 
@@ -118,9 +120,10 @@ class Search:
         return newGcost < oldGcost
     
     def getMinorNode(self, dic) -> Node:
-        
-        
-        return maxObject
+        key = min(dic, key=dic.get)
+
+        x,y = key.split(':')[0], key.split(':')[1]
+        return self.grid[int(x)][int(y)]
 
 
 
