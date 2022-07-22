@@ -1,7 +1,36 @@
 from Mapping import *
 from Search import *
+import time
 
 
-gridTest = [[1,1,1,1,1,1,0,1],[1,0,0,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,1,1]]
-search = Search(Node(0,0,0), Node(0,7,0), gridTest)
-print(search.aStar())
+
+
+
+
+begin = time.time()
+map = Map()
+
+
+search = Search(map.grafs[100][100], map.grafs[60][400], map.grafs)
+
+
+
+resp = search.aStar()
+
+
+vect = []
+node = resp
+while (node.father != None):
+    vect.append(node)
+    node = node.father
+   
+    
+vect.append(node)
+
+vect.reverse()
+map.showMap(vect)
+
+print(time.time() - begin)
+# for nod in vect:
+#     print(nod.x, nod.y)
+
