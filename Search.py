@@ -1,4 +1,5 @@
 from Node import *
+import numpy as np
 
 CARDINAL = 10
 DIAGONAL = 14
@@ -12,8 +13,6 @@ class Search:
         
     
     def aStar(self):
-        
-
         actual = self.begin
         openDic = {f'{actual.x}:{actual.y}' : actual.func}
         
@@ -22,19 +21,12 @@ class Search:
         actual.Fcost = 0
         while openDic != {}:
             actual = self.getMinorNode(openDic)
-            print(f'Actual actual:{actual.getPos()} func:{actual.func}')
-            # for node in openLst:
-            #     print(node.getPos(), node.func, node.gCost, node.hCost)
-            # enter = input('enter:')
-            # print(f"Actual:{actual.getPos()}")
-
+            
             closedSet.add(f'{actual.x}:{actual.y}')
             openDic.pop(f'{actual.x}:{actual.y}')
             if actual == self.objective:
-                return actual
-
+                return actual, closedSet
             for neighboor in self.getNeighboors(actual):
-                
                 if f'{neighboor.x}:{neighboor.y}' in closedSet:
                      continue
                 if neighboor not in openDic.values():
@@ -59,8 +51,8 @@ class Search:
 
     
 
-    def getNeighboors(self, actual) -> list:
-        neighboors = []
+    def getNeighboors(self, actual) -> set:
+        neighboors = set()
         x, y = actual.x , actual.y 
         for x1 in range(x-1, x + 2):
             if 0 > x1 or x1 > len(self.grid ) -1  : continue # fora do mapa
@@ -70,7 +62,7 @@ class Search:
                 if not self.grid[x1][y1].isEmpty: # bloqueado  
                     continue
                 if self.diagonalBlock(x,y,x1,y1): continue
-                neighboors.append(self.grid[x1][y1])
+                neighboors.add(self.grid[x1][y1])
         return neighboors
     
     def diagonalBlock(self, x, y, x1, y1) -> bool: # em caso de consideração de canto como vizinho verifica se não a bloqueio ao redor
@@ -119,9 +111,11 @@ class Search:
         newGcost = actual.gCost + self.distance(actual, neighboor)
         return newGcost < oldGcost
     
+
+
+
     def getMinorNode(self, dic) -> Node:
         key = min(dic, key=dic.get)
-
         x,y = key.split(':')[0], key.split(':')[1]
         return self.grid[int(x)][int(y)]
 

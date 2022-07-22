@@ -1,3 +1,4 @@
+from matplotlib.pyplot import close
 from Mapping import *
 from Search import *
 import time
@@ -11,11 +12,11 @@ begin = time.time()
 map = Map()
 
 
-search = Search(map.grafs[100][100], map.grafs[450][300], map.grafs)
+search = Search(map.grafs[10][10], map.grafs[1000][1000], map.grafs)
 
 
 
-resp = search.aStar()
+resp, closedSet = search.aStar()
 
 
 vect = []
@@ -32,6 +33,5 @@ print(time.time() - begin)
 map.showMap(vect)
 
 
-# for nod in vect:
-#     print(nod.x, nod.y)
+
 
