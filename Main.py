@@ -1,24 +1,27 @@
+import graphlib
 from Mapping import *
 from Search import *
 import time
 
-map = Map()
+from graphVisibility import *
+
 begin = time.time()
+map = Map()
+search = Search(map.grafs[0][0], map.grafs[0][7], map.grafs)
+gv = GraphVisibility(map.grafs, search)
 
-search = Search(map.grafs[10][10], map.grafs[800][400], map.grafs)
-resp, closedSet = search.aStar()
-vect = []
-node = resp
-while (node.father != None):
-    vect.append(node)
-    node = node.father
-   
-    
-vect.append(node)
 
-vect.reverse()
+
+# resp = search.aStar()
+# vect = []
+# node = resp
+# while (node.father != None):
+#     vect.append(node)
+#     node = node.father
+# vect.append(node)
+# vect.reverse()
 print(time.time() - begin)
-map.showMap(vect, closedSet)
+map.showMap(corners=gv.corners.keys())
 
 
 

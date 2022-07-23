@@ -1,6 +1,5 @@
 import time
 from Node import *
-import operator
 
 CARDINAL = 10
 DIAGONAL = 14
@@ -34,7 +33,7 @@ class Search:
             
             if actual == self.objective:
                 print('total:',self.getTot) 
-                return actual, closedSet
+                return actual
             
             neighboors = self.getNeighboors(actual)
             for neighboor in neighboors:
@@ -116,10 +115,6 @@ class Search:
         return DIAGONAL * distX + CARDINAL * (distY - distX)
     
 
-
-
-
-
     def distance(self, actual, neighboor) -> int:
         if (actual.x == neighboor.x + 1 and actual.y == neighboor.y) or (actual.y == neighboor.y and actual.x == neighboor.x - 1): # cardinal cima e baixo
             return CARDINAL
@@ -134,14 +129,9 @@ class Search:
         return newGcost < oldGcost
     
 
-
-
     def getMinorNode(self, dic) -> Node:
-        
-        # key = min(dic.items(), key=operator.itemgetter(1))[0]
-        key = min(dic, key=dic.get) # performace 1
+        key = min(dic, key=dic.get) 
         x,y = key.split(':')[0], key.split(':')[1]
-        
         return self.grid[int(x)][int(y)]
 
 

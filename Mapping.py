@@ -15,42 +15,42 @@ class Map:
 
     def makeMap(self) -> None:
         
-        # self.map = [[1,1,1,1,1,1,0,1],[1,0,0,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,1,1]]
+        self.map = [[1,0,1,1,1,1,0,1],[1,0,0,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,1,1,1]]
         
         # for i in range(0, self.img.height):
-        #     vect = []
-        #     for j in range(0, self.img.width):
-        #         vect.append(1) if self.pix[i,j][0] != 0 else vect.append(0)
-        #     self.map.append(vect)
+            # vect = []
+            # for j in range(0, self.img.width):
+            #     vect.append(1) if self.pix[i,j][0] != 0 else vect.append(0)
+            # self.map.append(vect)
 
         
-        for i in range(self.img.height):
-            vect = []
-            for j in range(self.img.width):
-                vect.append(Node(i,j, 1 if self.pix[j,i][0] != 0 else 0))
-            self.grafs.append(vect)
-        # self.setGrafos()
+        # for i in range(self.img.height):
+        #     vect = []
+        #     for j in range(self.img.width):
+        #         vect.append(Node(i,j, 1 if self.pix[j,i][0] != 0 else 0))
+        #     self.grafs.append(vect)
+        self.setGrafos()
 
-    def showMap(self, vect, closedSet) -> None:
+    def showMap(self, vect = None, corners = None) -> None:
         
         plotGrid = [[[y.isEmpty * 255, y.isEmpty * 255, y.isEmpty * 255] for y in x] for x in self.grafs]
         x = []
         y = []
-        x1 = []
-        y2 = []
-        for node in vect:
-            x.append(node.y)
-            y.append(node.x)
-        for str in closedSet:
-            x1.append(str.split(':')[0])
-            y2.append(str.split(':')[1])
+        # for node in vect:
+        #     x.append(node.y)
+        #     y.append(node.x)
+
+        xCorner, yCorner = [], []
+        for corner in corners:
+            xCorner.append(corner[1])
+            yCorner.append(corner[0])
 
 
-        print(len(closedSet))
-        plt.scatter(x,y)
+
+        # plt.scatter(x,y)
         # plt.scatter(x[0],y[0],color='green')
         # plt.scatter(x[-1],y[-1],color='red')
-        # plt.scatter(y2,x1, color = 'orange')
+        plt.scatter(xCorner, yCorner, color='brown')
         
         plt.imshow(plotGrid)
         plt.show()
