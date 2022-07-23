@@ -1,21 +1,14 @@
 from Node import *
 from Search import DIAGONAL
-import enum
- 
-# directions enum
 
-
-class Directions(enum.Enum):
-    RIGHT = 1
-    LEFT = 2
-    DOWN = 3 
-    UP = 4
-    UPLEFT = 5
-    UPRIGHT = 6
-    DOWNLEFT= 7
-    DOWNRIGHT = 8
-
-
+RIGHT = (0,1)
+LEFT = (0,-1)
+DOWN = (1,0) 
+UP = (-1,0)
+UPLEFT = (-1,-1)
+UPRIGHT = (-1,1)
+DOWNLEFT= (1,-1)
+DOWNRIGHT = (1,1)
 
 class GraphVisibility:
     def __init__(self, grid, searchObj) -> None:
@@ -24,10 +17,11 @@ class GraphVisibility:
         self.corners = {}
         self.searchObj = searchObj
         self.defineCorners()
-        print('Moves:',self.clearence(self.grid[2][3], Directions.RIGHT))
+        self.defineCornersEdges()
+        
 
     def defineCorners(self) -> list:      
-         
+
         for line in self.grid:
             for node in line:
                 if not node.isEmpty:
@@ -36,7 +30,7 @@ class GraphVisibility:
                     self.markCorners(node,neighboors)
 
     
-    def getNeighboors(self, node) -> list:
+    def getNeighboors(self, node) -> set():
         neighboors = set()
         x, y = node.x , node.y 
         for x1 in range(x-1, x + 2):
@@ -57,53 +51,89 @@ class GraphVisibility:
             if self.searchObj.distance(node,neighboor) == DIAGONAL and not self.searchObj.diagonalBlock(x,y,neighboor.x, neighboor.y):
                 self.corners[neighboor.getPos()] = neighboor
 
+    def defineCornersEdges(self):
+        for node in self.corners.values():
+            self.getHreach(node)
+    
+    def defineBeginEndEdges(self, begin, end):
+        self.getHreach(begin)
+        self.getHreach(end)
+        for k,v in end.neighboors.items():
+            self.grid[int(k.split(':')[0])][int(k.split(':')[1])].neighboors[f'{end.x}:{end.y}'] = v
+    
+    
+     
 
-    def getHreach(self, node, cardinal, diagonal) -> list:
-        subgoal = []
-        maxLineLen = self.clearence(node)
-        maxDiagMov = self.clearence(node)
-        for i in range(maxDiagMov):
-            pass
 
-    def clearence(self, node, direction) -> int:
-        moves, x, y = 0, node.x, node.y
-        if direction == Directions.UP:
-            while not self.cornerOrBlock(x-1,y):
-                x =-1
-                moves+=1
-        elif direction == Directions.DOWN:
-            while not self.cornerOrBlock(x+1,y):
-                x += 1
-                moves +=1 
-        elif direction == Directions.LEFT:
-            while not self.cornerOrBlock(x,y-1):
-                y -= 1
-                moves+=1
-        elif direction == Directions.RIGHT:
-            while not self.cornerOrBlock(x,y+1):
-                y+=1
-                moves+=1
-        return moves+1    
+    
+    def getEdges(self) -> dict:
+        dict = {}
+        for node in self.corners.values():
+            dict[node.getPos()] = node.neighboors
+        return dict
 
-    def cornerOrBlock(self, x, y) -> bool:
+    def getHreach(self, node) -> None:
+        self.actualNode = node
+        maxUp = self.clearence(node, UP)
+        maxLeft = self.clearence(node, LEFT)
+        maxRight = self.clearence(node, RIGHT)
+        maxDown = self.clearence(node, DOWN)
+        self.getDiagonals(node, UPRIGHT, maxUp, maxRight)
+        self.getDiagonals(node, UPLEFT, maxUp, maxLeft)
+        self.getDiagonals(node, DOWNLEFT, maxDown, maxLeft)
+        self.getDiagonals(node, DOWNRIGHT, maxDown, maxRight)
+    
+    def getDiagonals(self, node, diagonal, limitUpDown, limitLeftRight) -> None:
+        self.clearence(node, diagonal)
+        x,y = node.x + diagonal[0] , node.y + diagonal[1]
+        moves = 0
+        while(not self.outOrBlock(x, y)):
+            node = self.grid[node.x + diagonal[0]][ node.y + diagonal[1]]
+            moves += DIAGONAL
+            if diagonal == UPRIGHT:
+                self.clearence(node,UP, moves, limitUpDown)
+                self.clearence(node,RIGHT,moves, limitLeftRight)
+            elif diagonal == UPLEFT:
+                self.clearence(node,UP, moves, limitUpDown)
+                self.clearence(node,LEFT, moves, limitLeftRight)
+            elif diagonal == DOWNLEFT:
+                self.clearence(node,DOWN, moves, limitUpDown)
+                self.clearence(node,LEFT, moves, limitLeftRight)                
+            elif diagonal == DOWNRIGHT:
+                self.clearence(node,DOWN, moves, limitUpDown)
+                self.clearence(node,RIGHT, moves, limitLeftRight)
+            x += diagonal[0]
+            y += diagonal[1]                
+
+
+    def clearence(self, node, direction, previousMove = 0, limit = None) -> int:
+        moves, x, y = 0, node.x + direction[0], node.y + direction[1]
+        if limit != None:
+            if moves+ 1 + previousMove > limit: return 0
+        while not self.outOrBlock(x,y):
+            if self.isCorner(x,y) and f'{x}:{y}'not in self.actualNode.neighboors: 
+                self.actualNode.neighboors[f'{x}:{y}'] = ((moves + 1) * self.getValueDirection(direction) + previousMove)
+            x += direction[0]
+            y += direction[1]
+            moves+=1
+        return moves
+   
+
+    def outOrBlock(self, x, y) -> bool:
+        outOfMap = (0 > x or x > len(self.grid ) -1 or  0 > y or y > len(self.grid[0] ) -1) 
+        if outOfMap : return True
         block = not self.grid[x][y].isEmpty
-        corner = self.grid[x][y].getPos() in self.corners.keys()
-        outOfMap = (0 > x or x > len(self.grid ) -1 or  0 > y or y > len(self.grid[0] ) -1)  
-        return  block or corner or outOfMap
+        return block
+    
+    def isCorner(self, x, y):
+        return self.grid[x][y].getPos() in self.corners.keys()
+    
+    def getValueDirection(self, direction):
+        if direction in [UP, RIGHT, DOWN, LEFT]:
+            return 10
+        return 14
 
 
 
-# GetDirectHReachable(cell s, cardinal dir. c, diagonal dir. d)
-    # SubgoalVector list = {};
-    # int maxLineLength = Clearance(s,c);
-    # int nDiagMoves = Clearance(s,d);
-    # for int i = 1 ... nDiagMoves
-        # s = neighbor of s toward d;
-        # l = Clearance(s,c);
-        # if (l < maxLineLength)
-            # maxLineLength = l;
-            # s’ = the cell l+1 moves away from s toward c;
-            # if (s’ is a subgoal)
-                # list.add(s’);
 
-    # return list;
+

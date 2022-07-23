@@ -1,4 +1,4 @@
-import time
+from attr import has
 from Node import *
 
 CARDINAL = 10
@@ -6,16 +6,17 @@ DIAGONAL = 14
 
 class Search:
     
-    def __init__(self, begin, objective,grid):
+    def __init__(self, begin, objective,grid, hasVisGraph = False):
         self.grid = grid
         self.begin = begin
         self.objective = objective
         self.begin.func = 0
-        self.getTot = 0
+        self.hasVisGraph = hasVisGraph
         
     
     def aStar(self):
         actual = self.begin
+        
         openDic = {f'{actual.x}:{actual.y}' : actual.func}
         
         closedSet = set()
@@ -23,19 +24,18 @@ class Search:
         actual.Fcost = 0
         
         while openDic != {}:
-            
-            inicio = time.time()
             actual = self.getMinorNode(openDic)
-            self.getTot += time.time() - inicio
 
             closedSet.add(f'{actual.x}:{actual.y}')
             openDic.pop(f'{actual.x}:{actual.y}')
             
             if actual == self.objective:
-                print('total:',self.getTot) 
                 return actual
             
-            neighboors = self.getNeighboors(actual)
+            if not self.hasVisGraph:
+                neighboors = self.getNeighboors(actual)
+            else:
+                neighboors = self.getNeighboorsWithVisGraph(actual)
             for neighboor in neighboors:
                 
                 
@@ -86,6 +86,15 @@ class Search:
         
         return neighboors
     
+    def getNeighboorsWithVisGraph(self, actual) -> set:
+        # print(actual.getPos())
+        # print(actual.neighboors)
+        posVect = actual.neighboors.keys()
+        vect = set()
+        for pos in posVect:
+            vect.add(self.grid[int(pos.split(':')[0])][int(pos.split(':')[1])])
+        return vect
+    
     def diagonalBlock(self, x, y, x1, y1) -> bool: # em caso de consideração de canto como vizinho verifica se não a bloqueio ao redor
         if x1 == x - 1 and y1 == y - 1 and (not self.grid[x1+1][y1].isEmpty or not self.grid[x1][y1+1].isEmpty):  #canto superior esquerdo
             return True
@@ -99,12 +108,17 @@ class Search:
         return False
 
     def calculateFunc(self, actual, neighboor) -> None:
-        
-        gCost = self.distance(actual, neighboor) + actual.gCost
+        if not self.hasVisGraph:
+            gCost = self.distance(actual, neighboor) + actual.gCost
+        else:
+            gCost = self.distanceWithVisGraph(actual, neighboor) + actual.gCost
         hCost = self.hCost(neighboor)
         neighboor.gCost = gCost
         neighboor.hCost = hCost
         neighboor.func = gCost + hCost
+    
+
+
 
 
     def hCost(self, neighboor) -> int:
@@ -121,11 +135,21 @@ class Search:
         elif (actual.y == neighboor.y + 1 and actual.x == neighboor.x) or (actual.x == neighboor.x and actual.y == neighboor.y - 1): # cardinal esquerda e direita
             return CARDINAL
         return DIAGONAL
+    
+
+    def distanceWithVisGraph(self, actual, neighboor):
+        return actual.neighboors[f'{neighboor.x}:{neighboor.y}']
+
+    
+
 
     
     def checkGcost(self, neighboor, actual) -> bool:
         oldGcost = neighboor.gCost
-        newGcost = actual.gCost + self.distance(actual, neighboor)
+        if not self.hasVisGraph:
+            newGcost = actual.gCost + self.distance(actual, neighboor)
+        else:
+            newGcost = actual.gCost + self.distanceWithVisGraph(actual, neighboor)
         return newGcost < oldGcost
     
 

@@ -5,7 +5,7 @@ class Node:
         self.x = x
         self.y = y
         self.isEmpty = isEmpty
-        self.neighboors = []
+        self.neighboors = {}
         self.func = None
         self.gCost = None
         self.hCost = None
