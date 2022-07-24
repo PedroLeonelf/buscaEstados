@@ -25,29 +25,21 @@ class Search:
         
         while openDic != {}:
             actual = self.getMinorNode(openDic)
-
             closedSet.add(f'{actual.x}:{actual.y}')
             openDic.pop(f'{actual.x}:{actual.y}')
-            
             if actual == self.objective:
-                return actual
-            
+                return actual, openDic
             if not self.hasVisGraph:
                 neighboors = self.getNeighboors(actual)
             else:
                 neighboors = self.getNeighboorsWithVisGraph(actual)
             for neighboor in neighboors:
-                
-                
                 if f'{neighboor.x}:{neighboor.y}' in closedSet:
                      continue
-                
                 if f'{neighboor.x}:{neighboor.y}' not in openDic.keys(): 
-                    
                     neighboor.father = actual
                     self.calculateFunc(actual, neighboor)
                     openDic[f'{neighboor.x}:{neighboor.y}'] = neighboor.func
-                    
                 elif f'{neighboor.x}:{neighboor.y}'in openDic.keys() and self.checkGcost(neighboor, actual):
                     self.calculateFunc(actual, neighboor)
                     neighboor.father = actual
@@ -60,35 +52,27 @@ class Search:
 
 
 
-            
-            # print(actual.getPos())
-            # for neighboor in self.getNeighboors(actual):
-            #     print('-- Vizinho:',neighboor.getPos(), neighboor.getCosts())
-            # enter = input('pressione para continuar:')
+
             
 
 
     
 
-    def getNeighboors(self, actual) -> set:
-
+    def getNeighboors(self, actual) -> set: # retorna os vizinhos ao redor do nodo atual
         neighboors = set()
         x, y = actual.x , actual.y 
-        for x1 in range(x-1, x + 2):
+        for x1 in range(x-1, x + 2): # percorre os 8 vizinhos ao redor
             if 0 > x1 or x1 > len(self.grid ) -1  : continue # fora do mapa
             for y1 in range(y-1, y + 2):
-                if 0 > y1 or y1 > len(self.grid[0] ) -1 or x1 == x and y1 == y: # fora do mapa 
+                if 0 > y1 or y1 > len(self.grid[0] ) -1 or x1 == x and y1 == y: # fora do mapa
                     continue
                 if not self.grid[x1][y1].isEmpty: # bloqueado  
                     continue
                 if self.diagonalBlock(x,y,x1,y1): continue
                 neighboors.add(self.grid[x1][y1])
-        
         return neighboors
     
     def getNeighboorsWithVisGraph(self, actual) -> set:
-        # print(actual.getPos())
-        # print(actual.neighboors)
         posVect = actual.neighboors.keys()
         vect = set()
         for pos in posVect:
@@ -107,7 +91,7 @@ class Search:
 
         return False
 
-    def calculateFunc(self, actual, neighboor) -> None:
+    def calculateFunc(self, actual, neighboor) -> None: 
         if not self.hasVisGraph:
             gCost = self.distance(actual, neighboor) + actual.gCost
         else:
@@ -121,7 +105,7 @@ class Search:
 
 
 
-    def hCost(self, neighboor) -> int:
+    def hCost(self, neighboor) -> int: # retorna se é diagonal ou cardinal pode ser usada para ver posição ou valor da movimentação
         distX = abs(neighboor.x - self.objective.x)
         distY = abs(neighboor.y - self.objective.y)
         if distX > distY:
@@ -129,7 +113,7 @@ class Search:
         return DIAGONAL * distX + CARDINAL * (distY - distX)
     
 
-    def distance(self, actual, neighboor) -> int:
+    def distance(self, actual, neighboor) -> int: # distancia sem grafo de visualização
         if (actual.x == neighboor.x + 1 and actual.y == neighboor.y) or (actual.y == neighboor.y and actual.x == neighboor.x - 1): # cardinal cima e baixo
             return CARDINAL
         elif (actual.y == neighboor.y + 1 and actual.x == neighboor.x) or (actual.x == neighboor.x and actual.y == neighboor.y - 1): # cardinal esquerda e direita

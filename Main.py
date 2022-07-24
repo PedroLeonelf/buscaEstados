@@ -1,33 +1,19 @@
-from Mapping import *
-from Search import *
-import time
-from graphVisibility import *
+# execução: Main.py (posição inicial x) (posição inicial y) (posição final x) (posição final y) (grafoDeVisibilidade 1)
+# exemplo sem grafo de visualização:  Main.py 10 10 100 100 
+# exemplo com grafo de visualização:  Main.py 10 10 100 100 1
+from Tester import *
+import sys
 
 
-map = Map()
-begin,end = map.grafs[10][10], map.grafs[900][900]
 
-withVisGraph = False
-if withVisGraph:
-    search = Search(begin, end, map.grafs, hasVisGraph= True)
-    gv = GraphVisibility(map.grafs, search)
-    gv.defineBeginEndEdges(begin,end)
-else:
-    search = Search(begin, end, map.grafs, hasVisGraph= False)
-beginTime = time.time()
-resp = search.aStar()
-vect = []
-node = resp
-while (node.father != None):
-    vect.append(node)
-    node = node.father
-vect.append(node)
-vect.reverse()
-print(time.time() - beginTime)
-if withVisGraph:
-    map.showMap(vect=vect,corners=gv.corners.keys(), edges = gv.getEdges(), connect= True)
-else:
-    map.showMap(vect)
+x,y,x1,y1 = sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]
+useVisGraph = False
+if len(sys.argv) == 6 and sys.argv[5] == '1' :
+    useVisGraph = True
+tester = Tester(x,y,x1,y1,useVisGraph)
+
+
+
 
 
 
