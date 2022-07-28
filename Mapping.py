@@ -1,6 +1,7 @@
 from PIL import Image
 import matplotlib.pyplot as plt 
 from Node import *
+import time
 
 # começar com grafos
 class Map:
@@ -8,7 +9,9 @@ class Map:
         self.img = Image.open('imagem.png')
         self.pix = self.img.load()
         self.grafs = []
+        inicio = time.time()
         self.makeMap()
+        print(f'Time to make grid:{time.time()-inicio}')
         # print(self.grafs)
 
     def makeMap(self) -> None:

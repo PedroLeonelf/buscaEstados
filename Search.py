@@ -1,4 +1,3 @@
-from attr import has
 from Node import *
 
 CARDINAL = 10

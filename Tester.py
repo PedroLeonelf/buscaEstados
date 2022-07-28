@@ -11,10 +11,15 @@ class Tester:
         self.makeSearch()
         
     def makeSearch(self):
+        if self.begin.isEmpty == 0 or self.objective.isEmpty == 0:
+            print("Begin and/or objective blocked(s)!")        
+            return
         if self.visGraph:
+            inicio = time.time()
             search = Search(self.begin, self.objective, self.map.grafs, hasVisGraph= True)
             gv = GraphVisibility(self.map.grafs, search)
             gv.defineBeginEndEdges(self.begin,self.objective)
+            print(f'Time grafo de visualização:{time.time() - inicio}')
         else:
             gv = None
             search = Search(self.begin, self.objective, self.map.grafs, hasVisGraph= False)
