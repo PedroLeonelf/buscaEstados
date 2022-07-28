@@ -16,13 +16,10 @@ class Search:
     
     def aStar(self):
         actual = self.begin
-        
         openDic = {f'{actual.x}:{actual.y}' : actual.func}
-        
         closedSet = set()
         actual.gCost = 0
         actual.Fcost = 0
-        
         while openDic != {}:
             actual = self.getMinorNode(openDic)
             closedSet.add(f'{actual.x}:{actual.y}')
@@ -44,19 +41,6 @@ class Search:
                     self.calculateFunc(actual, neighboor)
                     neighboor.father = actual
                 
-                
-                
-                
-
-
-
-
-
-
-            
-
-
-    
 
     def getNeighboors(self, actual) -> set: # retorna os vizinhos ao redor do nodo atual
         neighboors = set()
@@ -102,9 +86,6 @@ class Search:
         neighboor.func = gCost + hCost
     
 
-
-
-
     def hCost(self, neighboor) -> int: # retorna se é diagonal ou cardinal pode ser usada para ver posição ou valor da movimentação
         distX = abs(neighboor.x - self.objective.x)
         distY = abs(neighboor.y - self.objective.y)
@@ -125,9 +106,6 @@ class Search:
         return actual.neighboors[f'{neighboor.x}:{neighboor.y}']
 
     
-
-
-    
     def checkGcost(self, neighboor, actual) -> bool:
         oldGcost = neighboor.gCost
         if not self.hasVisGraph:
@@ -141,10 +119,3 @@ class Search:
         key = min(dic, key=dic.get) 
         x,y = key.split(':')[0], key.split(':')[1]
         return self.grid[int(x)][int(y)]
-
-
-
-
-
-
-

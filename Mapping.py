@@ -29,11 +29,11 @@ class Map:
         #     yCorner.append(corner[0])
         # plt.scatter(xCorner, yCorner, color='brown') 
 
-        # for k,v in edges.items():# ver arestas
-        #     for dic in v:
-        #         point = [k[1], int(dic.split(':')[1])]
-        #         points2 = [k[0],int(dic.split(':')[0])]
-        #         plt.plot(point, points2, color = 'purple')
+        for k,v in edges.items():# ver arestas
+            for dic in v:
+                point = [k[1], int(dic.split(':')[1])]
+                points2 = [k[0],int(dic.split(':')[0])]
+                plt.plot(point, points2, color = 'purple')
         x = []
         y = []
         for node in vect:
