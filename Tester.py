@@ -2,6 +2,7 @@ from Search import *
 from GraphVisibility import *
 from Mapping import *
 import time
+import random
 class Tester:
     def __init__(self, y,x,y1,x1,visGraph = False):
         self.map = Map()
@@ -19,7 +20,7 @@ class Tester:
             search = Search(self.begin, self.objective, self.map.grafs, hasVisGraph= True)
             gv = GraphVisibility(self.map.grafs, search)
             gv.defineBeginEndEdges(self.begin,self.objective)
-            print(f'Time grafo de visualização:{time.time() - inicio}')
+            print(f'Tempo para fazer o grafo de visualização:{time.time() - inicio}')
         else:
             gv = None
             search = Search(self.begin, self.objective, self.map.grafs, hasVisGraph= False)
@@ -44,4 +45,53 @@ class Tester:
 
 
 
+
+class OneHundredPoints:
+    def __init__(self) -> None:
+        self.map = Map()
+        self.points = [(random.randrange(1, len(self.map.grafs[0]), 1),random.randrange(1, len(self.map.grafs[0]), 1)) for _ in range(100)]
+        self.changeBlockPoints()
+        print(f'Random points:{self.points}')
+        self.makeVisGraph()
+        self.makeSearchs()    
+    def changeBlockPoints(self) -> None:
+        for idx, _ in enumerate(self.points):
+            x,y = self.points[idx][0],self.points[idx][1]
+            while not self.map.grafs[x][y].isEmpty: # Enquanto tiver ponto bloqueado troca por outro aleatorio
+                self.points[idx] = (random.randint(1, len(self.map.grafs[0])-1), random.randint(1, len(self.map.grafs[0])-1))
+                x,y = self.points[idx][0],self.points[idx][1]
+
+
+    def makeVisGraph(self) -> None:
+        inicio = time.time()
+        self.gv = GraphVisibility(self.map.grafs, Search(self.map.grafs[0][0],self.map.grafs[0][1],self.map.grafs, True))
+        print(f'Time to make Visibility Graph:{time.time() - inicio}s')
+
+
+
+    def makeSearchs(self) -> None:
+        
+        for searchIdx in range(50):
+            begin,objective = self.map.grafs[self.points[searchIdx][0]][self.points[searchIdx][1]], self.map.grafs[self.points[searchIdx+50][0]][self.points[searchIdx+50][1]]
+            searchAStar = Search(begin, objective, self.map.grafs, hasVisGraph= False)
+            searchVisGraph = Search(begin, objective, self.map.grafs, hasVisGraph= True)
+            self.gv.defineBeginEndEdges(begin,objective)
+            # aStar
+            beginTime = time.time()
+            node, openList = searchAStar.aStar()
+            self.writeInfo(f'{searchIdx+1}-Astar {self.points[searchIdx]} -> {self.points[searchIdx+50]} - time:{round(time.time() - beginTime,2)}s, openNodes:{len(openList)}, distance:{node.func}')
+            # VisGraph
+            beginTime = time.time()
+            node, openList = searchVisGraph.aStar()
+            self.writeInfo(f'{searchIdx+1}-VisGraph {self.points[searchIdx]} -> {self.points[searchIdx+50]} - time:{round(time.time() - beginTime,5)}s, openNodes:{len(openList)}, distance:{node.func}')
+            self.writeInfo(' ')
+
+    def writeInfo(self, txt) -> None:
+        with open('OneHundredPoints.txt', 'a') as file:
+            file.write(txt + '\n')
+    
+ 
+        
+
+        
 

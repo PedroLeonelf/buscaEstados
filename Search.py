@@ -71,7 +71,6 @@ class Search:
             return True
         elif x1 == x+1 and y1 == y+1 and (not self.grid[x1][y1-1].isEmpty or not self.grid[x1-1][y1].isEmpty):    # canto inferior direito
             return True
-
         return False
 
     def calculateFunc(self, actual, neighboor) -> None: 
