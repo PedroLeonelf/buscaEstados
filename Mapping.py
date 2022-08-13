@@ -49,7 +49,7 @@ class Map:
         plt.scatter(x[0],y[0],color='green') # inicio
         plt.scatter(x[-1],y[-1],color='red') # fim
         
-        plt.imshow(plotGrid)
+        plt.imshow(plotGrid) # mostra a grid
         plt.show()
 
     
